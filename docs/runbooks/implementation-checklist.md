@@ -4,6 +4,7 @@
 
 - escopo da POC validado
 - caso de uso inicial de CRUD de pessoas definido
+- decisoes consolidadas registradas em documentacao
 - endpoints iniciais definidos
 - payloads e erros documentados
 - fluxo principal da requisicao entendido
@@ -30,5 +31,6 @@
 - tratamento de erro padronizado
 - logs obrigatorios em create, get, list, update e delete definidos
 - logs em adapter, caso de uso e repositorio definidos
+- Lambdas por operacao definidas
 - dashboard inicial planejado
 - criterios de aceite da POC revisados

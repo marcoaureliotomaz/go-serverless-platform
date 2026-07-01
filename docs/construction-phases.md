@@ -11,6 +11,22 @@ Organizar a construcao da POC como um plano executavel de trabalho, com fases, t
 - validar os criterios de saida de cada fase antes de avancar;
 - evitar iniciar codigo antes das definicoes estruturais obrigatorias.
 
+## Estado Atual das Definicoes
+
+As fases deste documento ja foram percorridas e consolidadas para esta POC. As decisoes finais estao registradas em [Decisoes Consolidadas da POC](poc-decisions.md).
+
+Resumo do que foi fechado:
+
+- dominio `Person`
+- CRUD completo com listagem
+- `HTTP API`
+- `1 Lambda por operacao`
+- DynamoDB com tabela unica
+- unicidade de `cpf`
+- observabilidade obrigatoria em todas as operacoes
+- `person-service` em `us-east-1`
+- Terraform com state local na fase inicial
+
 ## Fase 0 - Fundacao da POC
 
 ### Tarefa 0.1 - Consolidar o escopo funcional
@@ -40,7 +56,7 @@ Subtarefas:
 - confirmar que o dominio da POC sera `Person`;
 - confirmar que a POC tera apenas CRUD e listagem;
 - confirmar que a persistencia sera em tabela unica;
-- confirmar que logs sao obrigatorios em todas as operacoes.
+- confirmar que logs, metricas e traces sao obrigatorios em todas as operacoes.
 
 ### Tarefa 0.2 - Definir criterios de sucesso da POC
 
@@ -132,6 +148,13 @@ Subtarefas:
 - definir formato de datas;
 - definir campos de auditoria;
 - definir padrao de resposta de sucesso.
+
+Decisoes fechadas nesta fase:
+
+- obrigatorios no create: `name`, `cpf`, `birth_date`, `active`, `salary`
+- update total
+- delete logico
+- listagem com `page_size`, `cursor`, `name_prefix`, `active`, `sort_order` e `include_deleted`
 
 ### Tarefa 1.3 - Definir erros e semantica HTTP
 
@@ -252,6 +275,12 @@ Subtarefas:
 - definir contrato de clock ou geracao de timestamps, se necessario;
 - definir contrato de id generator, se necessario.
 
+Decisoes fechadas nesta fase:
+
+- portas de saida: `PersonRepository`, `Logger`, `Metrics`, `Tracer`, `Clock`, `IDGenerator`
+- item deletado nao pode ser atualizado
+- item com `active=false` pode ser atualizado
+
 ## Fase 3 - Modelagem da Persistencia em Tabela Unica
 
 ### Tarefa 3.1 - Definir o item da tabela unica
@@ -313,8 +342,15 @@ Subtarefas:
 - definir listagem;
 - definir atualizacao;
 - definir exclusao;
-- decidir se `document` exige acesso dedicado;
+- decidir se `cpf` exige acesso dedicado;
 - decidir se a listagem exigira ordenacao ou paginacao.
+
+Decisoes fechadas nesta fase:
+
+- `pk = PERSON#{id}`
+- `sk = PROFILE`
+- item auxiliar para unicidade de `cpf`
+- busca por nome por prefixo
 
 ### Tarefa 3.3 - Definir estrategia de consistencia e auditoria
 
@@ -437,6 +473,12 @@ Subtarefas:
 - definir dashboards minimos;
 - definir alertas basicos.
 
+Decisoes fechadas nesta fase:
+
+- logs com `timestamp`, `level`, `message`, `service`, `environment`, `correlation_id`, `operation`, `layer`, `outcome`, `duration_ms`, `person_id` e `error_code`
+- CPF sempre mascarado
+- 1 trace por requisicao HTTP
+
 ## Fase 5 - Infraestrutura AWS e Terraform
 
 ### Tarefa 5.1 - Definir estrutura Terraform
@@ -500,6 +542,15 @@ Subtarefas:
 - definir CloudWatch Logs;
 - definir parametros ou segredos necessarios;
 - definir integracao com Datadog.
+
+Decisoes fechadas nesta fase:
+
+- `HTTP API`
+- `1 Lambda por operacao`
+- `person-service`
+- prefixo `poc-person-dev`
+- `us-east-1`
+- `Parameter Store`
 
 ### Tarefa 5.3 - Definir seguranca minima da infraestrutura
 
@@ -591,6 +642,12 @@ Subtarefas:
 - terceira fatia: list people com paginacao basica;
 - quarta fatia: update person com rastreabilidade;
 - quinta fatia: delete person com confirmacao e logs finais.
+
+Decisoes fechadas nesta fase:
+
+- primeira onda: `create` e `get`
+- segunda onda: `list`, `update` e `delete`
+- shared core minimo: sim
 
 ## Fase 7 - Preparacao para Evolucao
 

@@ -4,6 +4,12 @@
 
 Implementar por fatias verticais pequenas, sempre validando arquitetura e operacao ao mesmo tempo. A POC deve evitar comecar por infraestrutura pesada sem um caso de uso minimo claro.
 
+Decisoes fechadas para execucao:
+
+- primeira onda: `create` e `get`
+- segunda onda: `list`, `update` e `delete`
+- cada operacao tera sua propria Lambda
+
 ## Fase 0 - Preparacao
 
 Objetivo:
@@ -117,6 +123,8 @@ Obrigatorio nesta fase:
 - garantir logs em create, get, list, update e delete;
 - garantir logs nos adaptadores HTTP, casos de uso e repositorio;
 - garantir que CloudWatch e Datadog recebam eventos suficientes para troubleshooting.
+- garantir 1 trace por requisicao HTTP;
+- garantir CPF sempre mascarado em logs.
 
 ## Fase 6 - Seguranca Basica
 
@@ -143,6 +151,15 @@ Entregaveis:
 - desenho alvo em K8s;
 - impacto em observabilidade;
 - impacto em deploy e operacao.
+
+## Configuracoes Consolidadas
+
+- `HTTP API`
+- `1 Lambda por operacao`
+- nome do servico: `person-service`
+- prefixo AWS: `poc-person-dev`
+- regiao AWS: `us-east-1`
+- Terraform state local na fase inicial
 
 ## Ordem Recomendada de Execucao
 

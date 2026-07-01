@@ -6,6 +6,14 @@ A POC deve priorizar desacoplamento entre dominio e tecnologia. AWS, Lambda, Dyn
 
 O contexto funcional da POC e um CRUD de pessoas persistido em tabela unica.
 
+Decisoes fechadas:
+
+- `HTTP API`
+- `1 Lambda por operacao`
+- `Person` como unica entidade principal
+- `cpf` unico como regra funcional
+- delete logico com `deleted` e `deleted_at`
+
 ## Arquitetura Alvo
 
 ```text
@@ -14,19 +22,22 @@ Cliente HTTP
    v
 API Gateway
    |
-   v
-Lambda Adapter
-   |
-   v
-Application / Use Cases
-   |
-   +--> Domain
-   |
-   +--> Output Ports
-           |
-           +--> DynamoDB Adapter
-           +--> Observability Adapter
-           +--> External Integrations Adapter
+   +--> Lambda CreatePerson
+   +--> Lambda GetPerson
+   +--> Lambda ListPeople
+   +--> Lambda UpdatePerson
+   `--> Lambda DeletePerson
+            |
+            v
+      Application / Use Cases
+            |
+            +--> Domain
+            |
+            +--> Output Ports
+                    |
+                    +--> DynamoDB Adapter
+                    +--> Observability Adapter
+                    `--> Parameter Store / External Adapters
 ```
 
 ## Principios
@@ -99,6 +110,13 @@ Premissas iniciais:
 - a tabela deve acomodar atributos escalares, listas e mapas;
 - logs de leitura e escrita devem incluir contexto suficiente para rastreabilidade sem expor dados sensiveis.
 
+Definicoes fechadas:
+
+- item principal com `pk = PERSON#{id}` e `sk = PROFILE`
+- item auxiliar para unicidade de `cpf`
+- busca por nome por prefixo
+- listagem com paginacao, filtro por `active`, ordenacao por `created_at` e filtro de deletados
+
 ### 5. Bootstrap
 
 Responsavel por:
@@ -129,7 +147,7 @@ Kubernetes nao deve competir com a primeira entrega serverless da POC. O papel r
 
 Para esta POC:
 
-- Lambda e o runtime principal;
+- Lambdas sao os runtimes principais;
 - Kubernetes entra como desenho de evolucao;
 - artefatos de K8s podem ser descritos documentalmente, sem implementacao inicial.
 
@@ -138,6 +156,7 @@ Para esta POC:
 - REST como contrato de entrada pela simplicidade da POC
 - CRUD de pessoas como caso de uso unico da POC
 - tabela unica no DynamoDB para validar modelagem flexivel
+- `HTTP API` com `1 Lambda por operacao`
 - Go pela previsibilidade operacional e cold start geralmente aceitavel
 - Lambda + API Gateway para reduzir carga operacional inicial
 - DynamoDB para persistencia serverless e elasticidade

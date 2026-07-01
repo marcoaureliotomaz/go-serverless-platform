@@ -29,6 +29,16 @@ Validar uma arquitetura de API REST em Go orientada a dominio, implantada em AWS
 - Estrategia de seguranca basica para a POC
 - Direcionamento de evolucao para Kubernetes
 
+## Definicoes Ja Fechadas
+
+- API aberta para a primeira versao
+- `HTTP API`
+- `1 Lambda por operacao`
+- ambiente unico `dev`
+- observabilidade obrigatoria com logs, metricas e traces
+- `cpf` unico
+- delete logico
+
 ## Escopo Nao Incluido
 
 - Autenticacao complexa com multiplos provedores

@@ -16,12 +16,17 @@ Organizar o repositorio de forma que aplicacao, infraestrutura e documentacao ev
 |   |-- runbooks/
 |   `-- ...
 |-- app/
-|   |-- cmd/
-|   |-- internal/
+|   |-- shared/
 |   |   |-- domain/
 |   |   |-- application/
 |   |   |-- ports/
 |   |   `-- adapters/
+|   |-- lambdas/
+|   |   |-- create-person/
+|   |   |-- get-person/
+|   |   |-- list-people/
+|   |   |-- update-person/
+|   |   `-- delete-person/
 |   `-- test/
 |-- infra/
 |   |-- terraform/
@@ -52,11 +57,17 @@ Reservado para a implementacao futura da API em Go.
 
 Sugestao conceitual:
 
-- `cmd/`: pontos de entrada da aplicacao;
-- `internal/domain/`: entidades e regras;
-- `internal/application/`: casos de uso;
-- `internal/ports/`: interfaces de entrada e saida;
-- `internal/adapters/`: implementacoes HTTP, AWS e persistencia.
+- `shared/domain/`: entidades e regras;
+- `shared/application/`: casos de uso;
+- `shared/ports/`: interfaces de entrada e saida;
+- `shared/adapters/`: implementacoes reutilizaveis de persistencia e observabilidade;
+- `lambdas/<operacao>/`: adaptador de entrada e bootstrap de cada Lambda.
+
+Racional:
+
+- a POC fechou `1 Lambda por operacao`;
+- ao mesmo tempo, tambem fechou `shared core minimo`;
+- essa estrutura aproxima mais o repositorio de um caso real de mercado serverless, onde cada funcao tem entrypoint proprio, mas reaproveita dominio e aplicacao.
 
 ### `infra/terraform/`
 
@@ -90,4 +101,5 @@ Reservado para automacoes auxiliares, sem misturar logica da aplicacao.
 - Nomes de diretorio orientados a responsabilidade
 - Separacao clara entre codigo da app e IaC
 - Nada de logica de negocio dentro de handlers
+- Uma Lambda por operacao com shared core reaproveitavel
 - Nada de Terraform espalhado fora de `infra/`
