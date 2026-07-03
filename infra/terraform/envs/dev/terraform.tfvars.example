@@ -1,0 +1,7 @@
+project         = "go-serverless-platform"
+service         = "person-service"
+environment     = "dev"
+aws_region      = "us-east-1"
+resource_prefix = "poc-person-dev"
+owner           = "platform-team"
+managed_by      = "terraform"
