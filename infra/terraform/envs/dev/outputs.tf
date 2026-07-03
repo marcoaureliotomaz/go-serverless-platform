@@ -16,6 +16,21 @@ output "planned_dynamodb_table_name" {
   value       = module.dynamodb.planned_table_name
 }
 
+output "planned_dynamodb_table_arn" {
+  description = "Planned DynamoDB table ARN for the POC."
+  value       = module.dynamodb.table_arn
+}
+
+output "planned_dynamodb_primary_key" {
+  description = "Primary key definition for the DynamoDB table."
+  value       = module.dynamodb.primary_key_definition
+}
+
+output "planned_dynamodb_gsi_names" {
+  description = "Planned DynamoDB global secondary indexes."
+  value       = module.dynamodb.gsi_names
+}
+
 output "planned_lambda_names" {
   description = "Planned Lambda functions for the POC."
   value       = module.lambda.planned_lambda_names
